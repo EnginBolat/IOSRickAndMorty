@@ -6,13 +6,14 @@
 //
 
 struct ServiceResponse<T: Codable> : Codable {
-    let info : ServiceInfo
+    struct Info : Codable {
+        let count : Int
+        let pages : Int
+        let next : String
+        let prev : String?
+    }
+    
+    let info : Info
     let results : [T]
 }
 
-struct ServiceInfo : Codable {
-    let count : Int
-    let pages : Int
-    let next : String
-    let prev : String?
-}

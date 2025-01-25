@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class CharactersViewController: UIViewController {
+final class CharactersViewController: UIViewController, CharacterListViewDelegate {
     private let characterListView = CharacterListView()
     
     override func viewDidLoad() {
@@ -23,6 +23,7 @@ final class CharactersViewController: UIViewController {
 
 extension CharactersViewController {
     private func layout() {
+        characterListView.delegate = self
         view.addSubview(characterListView)
         
         NSLayoutConstraint.activate([
@@ -31,5 +32,17 @@ extension CharactersViewController {
             characterListView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
             characterListView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
+    }
+    
+    func characterListView(_ characterListView: CharacterListView, didSelectCharacter character: Characters) {
+        let viewModel = CharacterDetailViewViewModel(character: character)
+        let detailVC = CharacterDetailViewController(viewModel: viewModel)
+        detailVC.navigationItem.largeTitleDisplayMode = .never
+        
+        let backButton = UIBarButtonItem()
+        backButton.title = ""
+        navigationItem.backBarButtonItem = backButton
+        
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }
