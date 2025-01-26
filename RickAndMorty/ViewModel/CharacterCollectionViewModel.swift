@@ -7,10 +7,20 @@
 
 import Foundation
 
-final class CharacterCollectionViewModel {
+final class CharacterCollectionViewModel: Hashable, Equatable {
     public let characterName: String
-    private let  characterStatus: CharacterStatus
+    private let characterStatus: CharacterStatus
     private let characterImageUrl: URL?
+    
+    static func == (lhs: CharacterCollectionViewModel, rhs: CharacterCollectionViewModel) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(characterName)
+        hasher.combine(characterStatus)
+        hasher.combine(characterImageUrl)
+    }
     
     init(characterName: String, characterStatus: CharacterStatus, characterImageUrl: URL? = nil) {
         self.characterName = characterName
@@ -28,14 +38,6 @@ final class CharacterCollectionViewModel {
             return
         }
         
-        let request = URLRequest(url:url)
-        let task = URLSession.shared.dataTask(with: request) { data, _, error in
-            guard let data = data, error == nil else {
-                completion(.failure(error ?? URLError(.badServerResponse)))
-                return
-            }
-            completion(.success(data))
-        }
-        task.resume()
+        ImageLoader.shared.downloadImage(url,completion: completion)
     }
 }

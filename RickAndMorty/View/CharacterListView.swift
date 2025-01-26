@@ -32,6 +32,11 @@ final class CharacterListView: UIView {
         collectionView.alpha = 0
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(CharacterCollectionViewCell.self, forCellWithReuseIdentifier: CharacterCollectionViewCell.cellIdentifier)
+        collectionView.register(
+                FooterLoadingCollectionReusableView.self,
+                forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
+                withReuseIdentifier: FooterLoadingCollectionReusableView.indetifier
+            )
         return collectionView
     }()
     
@@ -80,6 +85,12 @@ extension CharacterListView {
 }
 
 extension CharacterListView : CharacterListViewViewModelDelegate {
+    func didLoadMoreCharacters(with newIndexPaths: [IndexPath]) {
+        collectionView.performBatchUpdates({
+            collectionView.insertItems(at: newIndexPaths)
+        }, completion: nil)
+    }
+    
     func didSelectCharacter(_ character: Characters) {
         delegate?.characterListView(self, didSelectCharacter: character)
     }
