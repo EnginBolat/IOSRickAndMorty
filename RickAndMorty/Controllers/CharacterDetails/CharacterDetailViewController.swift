@@ -25,7 +25,9 @@ final class CharacterDetailViewController: UIViewController {
         commonInit()
         detailsView.collectionView?.delegate = self
         detailsView.collectionView?.dataSource = self
-        detailsView.collectionView?.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        detailsView.collectionView?.register(CharacterHeroImageCollectionViewCell.self, forCellWithReuseIdentifier: CharacterHeroImageCollectionViewCell.identifier)
+        detailsView.collectionView?.register(CharacterInfoCollectionViewCell.self, forCellWithReuseIdentifier: CharacterInfoCollectionViewCell.identifier)
+        detailsView.collectionView?.register(CharacterEpisodeCollectionViewCell.self, forCellWithReuseIdentifier: CharacterEpisodeCollectionViewCell.identifier)
     }
     
     required init?(coder: NSCoder) {
@@ -63,31 +65,54 @@ extension CharacterDetailViewController {
 }
 
 extension CharacterDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return viewModel.sections.count
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch section {
-        case 0:
+        let sectionType = viewModel.sections[section]
+        switch sectionType {
+        case .photo:
             return 1
-        case 1:
-            return 8
-        case 2:
-            return 20
-        default:
-            return 1
+        case .information(let viewModels):
+            return viewModels.count
+        case .episodes(let viewModels):
+            return viewModels.count
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        cell.backgroundColor = .systemPink
+        let sectionType = viewModel.sections[indexPath.section]
         
-        if indexPath.section == 0 { cell.backgroundColor = .systemPink }
-        else if indexPath.section == 1 { cell.backgroundColor = .blue }
-        else { cell.backgroundColor = .green }
-        
-        return cell
+        switch sectionType {
+            
+        case .photo(let viewModel):
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: CharacterHeroImageCollectionViewCell.identifier,
+                for: indexPath
+            ) as? CharacterHeroImageCollectionViewCell else { fatalError() }
+            cell.configure(with: viewModel)
+            return cell
+            
+        case .information(let viewModels):
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: CharacterInfoCollectionViewCell.identifier,
+                for: indexPath
+            ) as? CharacterInfoCollectionViewCell else { fatalError() }
+            cell.configure(with: viewModels[indexPath.row])
+            return cell
+            
+            
+        case .episodes(let viewModels):
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: CharacterEpisodeCollectionViewCell.identifier,
+                for: indexPath
+            ) as? CharacterEpisodeCollectionViewCell else { fatalError() }
+            cell.configure(with: viewModels[indexPath.row])
+            return cell
+        }
     }
+    
 }
+
