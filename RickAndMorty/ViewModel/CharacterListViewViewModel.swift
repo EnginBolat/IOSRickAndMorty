@@ -23,7 +23,7 @@ final class CharacterListViewViewModel: NSObject {
         didSet {
             for character in characters {
                    let viewModel = CharacterCollectionViewModel(
-                       characterName: character.name,
+                    characterName: character.name,
                        characterStatus: character.status,
                        characterImageUrl: URL(string: character.image)
                    )
@@ -37,7 +37,7 @@ final class CharacterListViewViewModel: NSObject {
     
     public func fetchCharacters() {
         let request = Request(endpoint: .character)
-        Service.shared.executeRequest(request, expecting: Characters.self, complete: { [weak self] result in
+        Service.shared.executeRequest(request, expecting: ServiceResponse<Characters>.self, complete: { [weak self] result in
             switch result {
             case .success(let responseModel):
                 let results = responseModel.results
@@ -67,7 +67,7 @@ final class CharacterListViewViewModel: NSObject {
             return
         }
     
-        Service.shared.executeRequest(request, expecting: Characters.self) { [weak self] result in
+        Service.shared.executeRequest(request, expecting: ServiceResponse<Characters>.self) { [weak self] result in
             guard let strongSelf = self else {
                 return
             }

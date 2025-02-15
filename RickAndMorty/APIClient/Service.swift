@@ -19,7 +19,7 @@ _ request: Request,
                                            method: HTTPMethod = .get,
                                            payload: [String: Any]? = nil,
 complete: @escaping (
-    Result<ServiceResponse<T>,Error>
+    Result<T,Error>
 ) -> Void
     ) {
         guard let url = request.url else {
@@ -42,11 +42,12 @@ complete: @escaping (
                 case .success(let data):
                     do {
                         let decodedResponse = try JSONDecoder().decode(
-                            ServiceResponse<T>.self,
+                            T.self,
                             from: data
                         )
                         complete(.success(decodedResponse))
                     } catch {
+                        print(response.result)
                         self.handleDecodingError(error)
                     }
                 case .failure(let error):
